@@ -16,9 +16,8 @@ const UserSchema = new Schema(
     },
     role: {
       type: String,
-      required: true,
-      enum: ['company', 'student'],
-      default: 'student',
+      enum: ['admin', 'user'],
+      default: 'user',
     },
     secretToken: {
       type: String,

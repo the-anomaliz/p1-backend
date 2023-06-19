@@ -1,7 +1,7 @@
-import User from '../models/user.model.js';
 import bcrypt from 'bcryptjs';
 import passport from 'passport';
 import passportConfig from '../config/passport.js';
+import User from '../models/user.model.js';
 passportConfig(passport);
 
 const Login = async (req, res, next) => {
@@ -26,7 +26,7 @@ const Login = async (req, res, next) => {
 };
 
 const Register = async (req, res, next) => {
-  const { full_name, email, password, role, confirm_password } = req.body;
+  const { full_name, email, password, confirm_password } = req.body;
 
   if (!full_name || !email || !password || !confirm_password) {
     return res.status(400).json({
@@ -54,7 +54,7 @@ const Register = async (req, res, next) => {
   }
 
   const secretToken = 'jqnwdouqdouno';
-  const newUser = new User({ full_name, email, password, role, secretToken });
+  const newUser = new User({ full_name, email, password, secretToken });
   bcrypt.genSalt(10, (err, salt) => {
     bcrypt.hash(newUser.password, salt, async (err, hash) => {
       newUser.password = hash;
@@ -62,11 +62,13 @@ const Register = async (req, res, next) => {
     });
   });
 
+  const { secretToken: token, ...sanitizedUser } = newUser.toObject();
+
   // send email here
   return res.status(200).json({
     success: true,
     message: 'Successfully Registered',
-    user: newUser,
+    user: sanitizedUser,
   });
 };
 

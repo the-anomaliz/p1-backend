@@ -1,12 +1,12 @@
-import express from 'express';
-import config from './config/index.js';
 import cors from 'cors';
-import connectDb from './db/db.js';
+import express from 'express';
 import session from 'express-session';
+import passport from 'passport';
+import config from './config/index.js';
+import passportConfig from './config/passport.js';
+import connectDb from './db/db.js';
 import authRoutes from './routes/auth.routes.js';
 import commonRoutes from './routes/common.routes.js';
-import passportConfig from './config/passport.js';
-import passport from 'passport';
 passportConfig(passport);
 
 const app = express();
