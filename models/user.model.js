@@ -19,10 +19,6 @@ const UserSchema = new Schema(
       enum: ['admin', 'user'],
       default: 'user',
     },
-    secretToken: {
-      type: String,
-      required: true,
-    },
     isVerified: {
       type: Boolean,
       default: false,

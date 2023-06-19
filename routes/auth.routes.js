@@ -4,5 +4,6 @@ const router = Router();
 
 router.post('/login', Login);
 router.post('/register', Register);
+router.post('/refreshToken', RefreshToken);
 
 export default router;
