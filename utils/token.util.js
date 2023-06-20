@@ -3,14 +3,22 @@ import config from '../config/index.js';
 
 const generateTokens = (user) => {
   try {
-    const payload = { _id: user._id, roles: user.roles };
-    const accessToken = jwt.sign(payload, config.ACCESS_TOKEN, { expiresIn: '1h' });
-    const refreshToken = jwt.sign(payload, config.REFRESH_TOKEN, { expiresIn: '1d' });
-
+    const accessToken = jwt.sign(user, config.ACCESS_TOKEN, { expiresIn: '1h' });
+    const refreshToken = jwt.sign(user, config.REFRESH_TOKEN, { expiresIn: '1d' });
     return { accessToken, refreshToken };
   } catch (err) {
-    return { err };
+    return err;
   }
 };
 
-export default generateTokens;
+const refreshAccessTokens = (user) => {
+  try {
+    const accessToken = jwt.sign(user, config.ACCESS_TOKEN, { expiresIn: '1h' });
+    return { accessToken };
+  } catch (error) {
+    console.log(error);
+    return error;
+  }
+};
+
+export { generateTokens, refreshAccessTokens };
