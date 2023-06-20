@@ -1,27 +1,48 @@
 import jwt from 'jsonwebtoken';
-import USER from '../models/user.model';
-import bcrypt from 'bcrypt';
 import config from '../config/index.js';
 
-const ensureAuthenticated = async (req, res, next) => {
+const validateAccesstoken = async (req, res, next) => {
   try {
-    const User = await USER.findOne({ email: req.body.email });
-    if (req.params.id.toString() === User._id.toString() && bcrypt.compareSync(req.body.password, User.password)) {
-      const tokenLength = User.token.length;
-      jwt.verify(User.token[tokenLength - 1], config.ACCESS_TOKEN, (err) => {
-        if (err) {
+    if (!req.header('Authorization') || !req.header('Authorization').split(' ')[1])
+      return res.status(400).json({ success: false, message: 'bad request', error: true });
+    const token = req.header('Authorization').split(' ')[1].trim();
+    const decodedUserInfo = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    jwt.verify(token, config.ACCESS_TOKEN, (err) => {
+      if (err) {
+        if (err.name === 'TokenExpiredError') {
+          console.log(err);
+          return res.status(401).json({ success: false, message: 'token expired', error: true });
+        } else {
           return res.status(401).json({ success: false, message: 'unauthorized', error: true });
         }
-        res.locals.isAuthenticated = true;
-        res.locals.user = User;
-      });
+      }
+      res.locals.user = decodedUserInfo;
       return next();
-    }
-    res.locals.isAuthenticated = false;
-    return res.status(401).json({ success: false, message: 'unauthorized', error: true });
+    });
   } catch (err) {
     return res.status(401).json({ success: false, message: 'unauthorized', error: true });
   }
 };
 
-export default ensureAuthenticated;
+const validateRefreshToken = async (req, res) => {
+  try {
+    const { refreshToken } = req.body;
+    const decodedUserInfo = JSON.parse(Buffer.from(refreshToken.split('.')[1], 'base64').toString());
+    jwt.verify(refreshToken, config.REFRESH_TOKEN, (err) => {
+      if (err) {
+        if (err.name === 'TokenExpiredError') {
+          console.log(err);
+          return res.status(401).json({ success: false, message: 'token expired', error: true });
+        } else {
+          return res.status(401).json({ success: false, message: 'unauthorized', error: true });
+        }
+      }
+      res.locals.user = decodedUserInfo;
+      return next();
+    });
+  } catch (err) {
+    return res.status(401).json({ success: false, message: 'unauthorized', error: true });
+  }
+};
+
+export { validateAccesstoken, validateRefreshToken };

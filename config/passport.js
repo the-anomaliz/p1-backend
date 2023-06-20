@@ -10,7 +10,7 @@ export default function (passport) {
     'local',
     new LocalStrategy({ usernameField: 'email' }, (email, password, done) => {
       User.findOne({ email: email })
-        .then(user => {
+        .then((user) => {
           if (!user) {
             return done(null, false, { message: 'Email not registered' });
           }
@@ -23,7 +23,7 @@ export default function (passport) {
             }
           });
         })
-        .catch(err => console.log(err));
+        .catch((err) => console.log(err));
     })
   );
 
