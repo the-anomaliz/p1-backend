@@ -16,6 +16,11 @@ const validateAccesstoken = async (req, res, next) => {
           return res.status(401).json({ success: false, message: 'unauthorized', error: true });
         }
       }
+
+      if (!decodedUserInfo.isActive && !decodedUserInfo.isVerified) {
+        return res.status(401).json({ success: false, message: 'unauthorized', error: true });
+      }
+
       res.locals.user = decodedUserInfo;
       return next();
     });
