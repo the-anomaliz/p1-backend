@@ -16,8 +16,12 @@ const UserSchema = new Schema(
     },
     role: {
       type: String,
-      enum: ['admin', 'user'],
-      default: 'user',
+      enum: ['l0', 'l1', 'l2'], //l0 super admin | l1 admin | l2 company | l3 user
+      default: 'l2',
+    },
+    emailVerified: {
+      type: Boolean,
+      default: false,
     },
     isVerified: {
       type: Boolean,
@@ -26,6 +30,52 @@ const UserSchema = new Schema(
     isActive: {
       type: Boolean,
       default: true,
+    },
+    lastLogin: {
+      type: Number,
+    },
+    jobTitle: {
+      type: String,
+    },
+    company: {
+      name: String,
+      address: String,
+      website: String,
+    },
+    address: {
+      house: String,
+      state: String,
+      district: String,
+      pincode: Number,
+      country: String,
+    },
+    aboutme: {
+      // can be separated in other collection
+      type: String,
+    },
+    currentStatus: {
+      type: String,
+    },
+    articles: {
+      // should be separated in other collection
+      type: String,
+    },
+    dealsMatters: {
+      type: String,
+    },
+    experience: {
+      // can be separated in other collection
+      type: Object,
+    },
+    educationHistory: [{}],
+    skills: {
+      type: Object,
+    },
+    feedbacks: {
+      type: String,
+    },
+    languages: {
+      type: Array,
     },
   },
   {

@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import config from '../config/index.js';
+import config from '../config/index.config.js';
 
 const validateAccesstoken = async (req, res, next) => {
   try {
@@ -17,10 +17,13 @@ const validateAccesstoken = async (req, res, next) => {
         }
       }
 
-      if (!decodedUserInfo.isActive && !decodedUserInfo.isVerified) {
-        return res.status(401).json({ success: false, message: 'unauthorized', error: true });
+      if (!decodedUserInfo.emailVerified) {
+        return res.status(401).json({ success: false, message: 'user email not verified', error: true });
+      } else if (!decodedUserInfo.isActive) {
+        return res.status(401).json({ success: false, message: 'user is not active', error: true });
       }
 
+      console.log(decodedUserInfo._id);
       res.locals.user = decodedUserInfo;
       return next();
     });

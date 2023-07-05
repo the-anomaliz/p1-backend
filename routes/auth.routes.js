@@ -1,10 +1,11 @@
 import { Router } from 'express';
-import { Login, Register, RefreshToken } from '../controller/auth.controller.js';
-import { validateRefreshToken } from '../middleware/auth.ware.js';
+import contoller from '../controller/auth.controller.js';
+import { validateRefreshToken, validateAccesstoken } from '../middleware/auth.ware.js';
 const router = Router();
 
-router.post('/login', Login);
-router.post('/register', Register);
-router.post('/refreshToken', validateRefreshToken, RefreshToken);
+router.post('/login', contoller.Login);
+router.post('/register', contoller.Register);
+router.post('/refreshToken', validateRefreshToken, contoller.RefreshToken);
+router.post('/activeStatus', validateAccesstoken, contoller.ActiveStatus);
 
 export default router;

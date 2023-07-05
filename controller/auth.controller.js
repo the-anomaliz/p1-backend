@@ -1,6 +1,6 @@
 import bcrypt from 'bcryptjs';
 import passport from 'passport';
-import passportConfig from '../config/passport.js';
+import passportConfig from '../config/passport.config.js';
 import User from '../models/user.model.js';
 import { generateTokens, refreshAccessTokens } from '../utils/token.util.js';
 passportConfig(passport);
@@ -18,15 +18,15 @@ const Login = async (req, res) => {
       if (!user) {
         return res.status(401).json({ success: false, message: 'user not found', error: true });
       }
-      req.logIn(user, function (error) {
+      req.logIn(user, async (error) => {
         if (error) {
           return res.status(401).json({ success: false, message: 'unauthorized', error: true });
         }
-
-        console.log(user.toObject());
         const { accessToken, refreshToken, err } = generateTokens(user.toObject());
         if (err)
           return res.status(309).json({ success: false, message: 'unable to generate user tokens', error: true });
+        const _id = user.toObject()._id;
+        await User.findByIdAndUpdate({ _id }, { lastLogin: +new Date() });
         return res.status(200).json({ success: true, message: 'found', error: false, accessToken, refreshToken });
       });
     })(req, res);
@@ -69,9 +69,34 @@ const RefreshToken = (req, res) => {
     const { accessToken } = refreshAccessTokens(userInfo);
     return res.status(200).json({ success: true, message: 'token refreshed successfully', accessToken });
   } catch (error) {
-    console.log(error);
     return res.status(500).json({ success: false, message: 'Internal Server error', error: true });
   }
 };
 
-export { Login, Register, RefreshToken };
+const SendOneTimePassword = (req, res) => {
+  // send email
+};
+
+const VerifyEmail = async (req, res) => {
+  try {
+    const { otp } = req.body;
+    const user = res.locals.user;
+
+    await User.findByIdAndUpdate(_id, { emailVerified: true });
+    res.json({ success: true, message: 'User email verified successfully', error: false });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: 'Internal Server error', error: true });
+  }
+};
+
+const ActiveStatus = async (req, res) => {
+  try {
+    const { activeStatus } = req.body;
+    await User.findByIdAndUpdate(_id, { isActive: activeStatus });
+    res.json({ success: true, message: 'User Activated Successfully', error: false });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: 'Internal Server error', error: true });
+  }
+};
+
+export default { Login, Register, RefreshToken, ActiveStatus, VerifyEmail, SendOneTimePassword };
