@@ -6,6 +6,8 @@ const config = {
   SECRET: process.env.SECRET,
   ACCESS_TOKEN: process.env.ACCESS_TOKEN,
   REFRESH_TOKEN: process.env.REFRESH_TOKEN,
+  EMAIL_PASS: process.env.EMAIL_PASS,
+  EMAIL_ID: process.env.EMAIL_ID,
 };
 
 export default config;
