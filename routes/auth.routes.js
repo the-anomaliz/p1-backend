@@ -5,6 +5,7 @@ const router = Router();
 
 router.post('/login', contoller.Login);
 router.post('/register', contoller.Register);
+router.post('/verifyEmail', contoller.VerifyEmail);
 router.post('/refreshToken', validateRefreshToken, contoller.RefreshToken);
 router.post('/activeStatus', validateAccesstoken, contoller.ActiveStatus);
 

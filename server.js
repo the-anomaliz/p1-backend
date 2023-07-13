@@ -39,7 +39,7 @@ app.use(passport.session());
 app.use('/', commonRoutes);
 app.use('/auth', authRoutes);
 app.all('*', (req, res) => {
-  res.status(400).json({ error: true, message: 'bad request', success: false });
+  res.status(400).json({ error: true, message: 'bad request' });
 });
 
 app.listen(app.get('PORT'), () => {

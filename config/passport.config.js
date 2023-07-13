@@ -2,7 +2,7 @@ import bcrypt from 'bcryptjs';
 import { Strategy as LocalStrategy } from 'passport-local';
 
 //User model
-import User from '../models/user.model.js';
+import { User } from '../models/main.model.js';
 
 // Passport function
 export default function (passport) {

@@ -1,23 +1,23 @@
 import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 
-const UserSchema = new Schema(
+export default new Schema(
   {
-    full_name: {
-      type: String,
-      required: true,
-    },
+    fullName: { type: String, required: true, trim: true, minlength: 3, maxlength: 20 },
     email: {
       type: String,
       required: true,
+      trim: true,
+      maxlength: 50,
+      validate: (email) => {
+        return /^[a-zA-Z0-9.!#$%&’*+\/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(email);
+      },
     },
-    password: {
-      type: String,
-    },
+    password: { type: String },
     role: {
       type: String,
-      enum: ['l0', 'l1', 'l2'], //l0 super admin | l1 admin | l2 company | l3 user
-      default: 'l2',
+      enum: ['l0', 'l1', 'l2', 'l3'], //l0 super admin | l1 admin | l2 company | l3 user
+      default: 'l3',
     },
     emailVerified: {
       type: Boolean,
@@ -38,42 +38,33 @@ const UserSchema = new Schema(
       type: String,
     },
     company: {
+      company_id: String, // company id to connect with _id from another DB
       name: String,
       address: String,
       website: String,
+      recongisedFor: String,
     },
     address: {
-      house: String,
-      state: String,
-      district: String,
-      pincode: Number,
-      country: String,
+      house: { type: String },
+      district: { type: String },
+      pincode: { type: Number },
+      state: { type: String },
+      country: { type: String },
     },
-    aboutme: {
-      // can be separated in other collection
+    about: {
       type: String,
     },
     currentStatus: {
       type: String,
     },
-    articles: {
-      // should be separated in other collection
-      type: String,
-    },
     dealsMatters: {
       type: String,
     },
-    experience: {
-      // can be separated in other collection
-      type: Object,
-    },
-    educationHistory: [{}],
+    educationHistory: [{ type: Schema.Types.ObjectId, ref: 'address' }], // separate collections
     skills: {
-      type: Object,
+      type: Array,
     },
-    feedbacks: {
-      type: String,
-    },
+    feedbacks: [{ type: Schema.Types.ObjectId, ref: 'address' }],
     languages: {
       type: Array,
     },
@@ -82,5 +73,3 @@ const UserSchema = new Schema(
     timestamps: true,
   }
 );
-
-export default mongoose.model('User', UserSchema);
