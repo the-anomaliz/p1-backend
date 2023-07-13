@@ -27,10 +27,19 @@ export default new Schema(
       type: Boolean,
       default: false,
     },
+    verifiedBy: {
+      type: String,
+    },
     isActive: {
       type: Boolean,
       default: true,
     },
+    activeSttausChangedBy: String,
+    isBlocked: {
+      type: Boolean,
+      default: false,
+    },
+    blockedStatus: String,
     lastLogin: {
       type: Number,
     },

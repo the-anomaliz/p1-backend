@@ -7,5 +7,6 @@ router.get('/', controller.Home);
 router.get('/user/info', validateAccesstoken, controller.UserInfo);
 router.get('/profile/me', validateAccesstoken, controller.FetchProfileInfo);
 router.post('/profile/me', validateAccesstoken, controller.UpdateProfileInfo);
+router.post('/org', validateAccesstoken, controller.createOrganisation);
 
 export default router;

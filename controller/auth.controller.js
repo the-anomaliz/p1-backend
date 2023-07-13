@@ -94,12 +94,38 @@ const VerifyEmail = async (req, res) => {
 
 const ActiveStatus = async (req, res) => {
   try {
-    const { activeStatus } = req.body;
-    await User.findByIdAndUpdate(_id, { isActive: activeStatus });
+    const { activeStatus, _id } = req.body;
+    const activeSttausChangedBy = req.locals.user._id;
+
+    await User.findByIdAndUpdate(_id, { isActive: activeStatus, activeSttausChangedBy });
     res.json({ message: 'User Activated Successfully', error: false });
   } catch (error) {
     return res.status(500).json({ message: 'Internal Server error', error: true });
   }
 };
 
-export default { Login, Register, RefreshToken, ActiveStatus, VerifyEmail, SendOneTimePassword };
+const verifyUser = async (req, res) => {
+  try {
+    const { activeStatus, _id } = req.body;
+    const verifiedBy = req.locals.user._id;
+    await User.findByIdAndUpdate(_id, { isVerified: activeStatus, verifiedBy });
+    res.json({ message: 'User Activated Successfully', error: false });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false, msg: 'error while verifying user' });
+  }
+};
+
+const blockUser = async (req, res) => {
+  const { activeStatus, _id } = req.body;
+  try {
+    const blockedStatus = req.locals.user._id;
+    await User.findByIdAndUpdate(_id, { isBlocked: activeStatus, blockedStatus });
+    res.json({ message: `User ${activeStatus ? 'blocked' : 'unblocked'} successfully`, error: false });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false, msg: `error while ${activeStatus ? 'blocking' : 'unblocking'} user` });
+  }
+};
+
+export default { Login, Register, RefreshToken, ActiveStatus, VerifyEmail, SendOneTimePassword, verifyUser, blockUser };
