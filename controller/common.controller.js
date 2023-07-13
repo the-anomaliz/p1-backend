@@ -1,4 +1,4 @@
-import { User } from '../models/main.model.js';
+import { User, Org } from '../models/main.model.js';
 
 const Home = (req, res) => {
   res.send('<center><h1>Welcome!</h1></center>');
@@ -41,12 +41,32 @@ const UpdateProfileInfo = async (req, res) => {
   try {
     const uid = res.locals.user._id;
     const userData = req.body;
+    if (!userData) res.status(400).json({ error: true, msg: 'req body cannot be empty' });
     const userInfo = await User.findOneAndUpdate({ _id: uid }, userData, { new: true });
-    res.json({ error: true, data: userInfo });
+    res.json({ error: false, data: userInfo });
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: true, msg: 'error while updating user info' });
   }
 };
 
-export default { Home, UserInfo, FetchProfileInfo, UpdateProfileInfo };
+const createOrganisation = async (req, res) => {
+  try {
+    const uid = res.locals.user._id;
+    const orgData = req.body;
+    if (!orgData) return res.status(400).json({ error: true, msg: 'req body cannot be empty' });
+
+    const orginfo = await Org.findOne({ fullName: orgData?.fullName });
+    if (orginfo) return res.status(401).json({ error: true, msg: 'organisation already exists' });
+
+    const newOrg = new Org({ ...orgData, createBy: uid });
+    await newOrg.save();
+
+    res.json({ error: false, data: newOrg });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: true, msg: 'error while updating user info' });
+  }
+};
+
+export default { Home, UserInfo, FetchProfileInfo, UpdateProfileInfo, createOrganisation };
