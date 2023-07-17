@@ -1,13 +1,14 @@
 import mongoose from 'mongoose';
+import config from '../config/index.config.js';
 
 const connectDb = async () => {
-  await mongoose.connect('mongodb://127.0.0.1:27017/p1-db');
+  await mongoose.connect(config.MONGO_STRING);
 };
 
 connectDb()
   .then(() => {
     console.log('Database connected seamlessly :)');
   })
-  .catch(err => console.log(err));
+  .catch((err) => console.log(err));
 
 export default connectDb;

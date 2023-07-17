@@ -8,6 +8,7 @@ const config = {
   REFRESH_TOKEN: process.env.REFRESH_TOKEN,
   EMAIL_PASS: process.env.EMAIL_PASS,
   EMAIL_ID: process.env.EMAIL_ID,
+  MONGO_STRING: process.env.MONGO_STRING,
 };
 
 export default config;
