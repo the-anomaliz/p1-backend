@@ -2,8 +2,8 @@ import cors from 'cors';
 import express from 'express';
 import session from 'express-session';
 import passport from 'passport';
-import config from './config/index.js';
-import passportConfig from './config/passport.js';
+import config from './config/index.config.js';
+import passportConfig from './config/passport.config.js';
 import connectDb from './db/db.js';
 import authRoutes from './routes/auth.routes.js';
 import commonRoutes from './routes/common.routes.js';
@@ -39,7 +39,7 @@ app.use(passport.session());
 app.use('/', commonRoutes);
 app.use('/auth', authRoutes);
 app.all('*', (req, res) => {
-  res.status(400).json({ error: true, message: 'bad request', success: false });
+  res.status(400).json({ error: true, message: 'bad request' });
 });
 
 app.listen(app.get('PORT'), () => {

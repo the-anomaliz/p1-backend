@@ -1,52 +1,34 @@
-import jwt from 'jsonwebtoken';
-import config from '../config/index.js';
+import { verifyAccessToken, verifyRefreshToken } from '../utils/auth.utils.js';
 
+//auth util verify token
 const validateAccesstoken = async (req, res, next) => {
   try {
     if (!req.header('Authorization') || !req.header('Authorization').split(' ')[1])
-      return res.status(400).json({ success: false, message: 'bad request', error: true });
+      return res.status(400).json({ message: 'bad request', error: true });
     const token = req.header('Authorization').split(' ')[1].trim();
-    const decodedUserInfo = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
-    jwt.verify(token, config.ACCESS_TOKEN, (err) => {
-      if (err) {
-        if (err.name === 'TokenExpiredError') {
-          console.log(err);
-          return res.status(401).json({ success: false, message: 'token expired', error: true });
-        } else {
-          return res.status(401).json({ success: false, message: 'unauthorized', error: true });
-        }
-      }
+    const decodedInfo = await verifyAccessToken(token);
+    if (!decodedInfo.emailVerified) {
+      return res.status(401).json({ success: false, message: 'user email not verified', error: true });
+    } else if (!decodedInfo.isActive) {
+      return res.status(401).json({ success: false, message: 'user is not active', error: true });
+    }
 
-      if (!decodedUserInfo.isActive && !decodedUserInfo.isVerified) {
-        return res.status(401).json({ success: false, message: 'unauthorized', error: true });
-      }
-
-      res.locals.user = decodedUserInfo;
-      return next();
-    });
+    res.locals.user = decodedInfo;
+    return next();
   } catch (err) {
-    return res.status(401).json({ success: false, message: 'unauthorized', error: true });
+    return res.status(500).json({ message: 'internal server error', error: true });
   }
 };
 
+// auth util verify token
 const validateRefreshToken = async (req, res) => {
   try {
     const { refreshToken } = req.body;
-    const decodedUserInfo = JSON.parse(Buffer.from(refreshToken.split('.')[1], 'base64').toString());
-    jwt.verify(refreshToken, config.REFRESH_TOKEN, (err) => {
-      if (err) {
-        if (err.name === 'TokenExpiredError') {
-          console.log(err);
-          return res.status(401).json({ success: false, message: 'token expired', error: true });
-        } else {
-          return res.status(401).json({ success: false, message: 'unauthorized', error: true });
-        }
-      }
-      res.locals.user = decodedUserInfo;
-      return next();
-    });
+    const decodedInfo = await verifyRefreshToken(refreshToken);
+    res.locals.user = decodedInfo;
+    return next();
   } catch (err) {
-    return res.status(401).json({ success: false, message: 'unauthorized', error: true });
+    return res.status(401).json({ message: 'unauthorized', error: true });
   }
 };
 
