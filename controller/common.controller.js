@@ -1,4 +1,4 @@
-import { User, Org, Article } from '../models/main.model.js';
+import { Article, Org, User } from '../models/main.model.js';
 
 const Home = (req, res) => {
   res.send('<center><h1>Welcome!</h1></center>');
@@ -85,7 +85,7 @@ const createPost = async (req, res) => {
   }
 };
 
-const fetchPost = async (req, res) => {
+const fetchPosts = async (req, res) => {
   try {
     const uid = res.locals.user._id;
     const articles = await Article.find({ uid });
@@ -97,7 +97,19 @@ const fetchPost = async (req, res) => {
   }
 };
 
-const fetchPostBytag = async (req, res) => {
+const fetchUserPosts = async (req, res) => {
+  try {
+    const { uid } = req.params;
+    const articles = await Article.find({ uid });
+
+    res.json({ error: false, data: articles });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: true, msg: 'error while updating user info' });
+  }
+};
+
+const fetchPostsByTag = async (req, res) => {
   try {
     const uid = res.locals.user._id;
     const tagName = req.body.tag;
@@ -118,6 +130,7 @@ export default {
   UpdateProfileInfo,
   createOrganisation,
   createPost,
-  fetchPost,
-  fetchPostBytag,
+  fetchPosts,
+  fetchUserPosts,
+  fetchPostsByTag,
 };

@@ -10,7 +10,8 @@ router.post('/profile/me', validateAccesstoken, controller.UpdateProfileInfo);
 router.post('/org', validateAccesstoken, controller.createOrganisation);
 
 router.post('/create/post', validateAccesstoken, controller.createPost);
-router.get('/fetch/post/me', validateAccesstoken, controller.fetchPost);
-router.get('/fetch/post/tag', validateAccesstoken, controller.fetchPostBytag);
+router.get('/posts/me', validateAccesstoken, controller.fetchPosts);
+router.get('/posts/:uid', validateAccesstoken, controller.fetchUserPosts);
+router.get('/posts/tag', validateAccesstoken, controller.fetchPostsByTag);
 
 export default router;
