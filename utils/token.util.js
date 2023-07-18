@@ -3,8 +3,8 @@ import config from '../config/index.config.js';
 
 const generateTokens = (user) => {
   try {
-    const accessToken = jwt.sign(user, config.ACCESS_TOKEN, { expiresIn: '1h' });
-    const refreshToken = jwt.sign(user, config.REFRESH_TOKEN, { expiresIn: '1d' });
+    const accessToken = jwt.sign(user, config.ACCESS_TOKEN, { expiresIn: '7d' });
+    const refreshToken = jwt.sign(user, config.REFRESH_TOKEN, { expiresIn: '30d' });
     return { accessToken, refreshToken };
   } catch (err) {
     return err;

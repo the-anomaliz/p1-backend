@@ -7,7 +7,7 @@ const Home = (req, res) => {
 const UserInfo = async (req, res) => {
   try {
     const statsType = req.query.stats;
-    const data = await User.find();
+    const data = await User.find().select({ password: 0 }).lean();
     const totalUser = data.length;
     let activeUsers = 0;
     let deactivedUsers = 0;
