@@ -1,4 +1,4 @@
-import { User, Org } from '../models/main.model.js';
+import { User, Org, Article } from '../models/main.model.js';
 
 const Home = (req, res) => {
   res.send('<center><h1>Welcome!</h1></center>');
@@ -41,7 +41,7 @@ const UpdateProfileInfo = async (req, res) => {
   try {
     const uid = res.locals.user._id;
     const userData = req.body;
-    if (!userData) res.status(400).json({ error: true, msg: 'req body cannot be empty' });
+    if (!userData) return res.status(400).json({ error: true, msg: 'req body cannot be empty' });
     const userInfo = await User.findOneAndUpdate({ _id: uid }, userData, { new: true });
     res.json({ error: false, data: userInfo });
   } catch (error) {
@@ -69,4 +69,55 @@ const createOrganisation = async (req, res) => {
   }
 };
 
-export default { Home, UserInfo, FetchProfileInfo, UpdateProfileInfo, createOrganisation };
+const createPost = async (req, res) => {
+  try {
+    const uid = res.locals.user._id;
+    const { heading, content, tags } = req.body;
+    if (!heading || !content) return res.status(400).json({ error: true, msg: 'req body cannot be empty' });
+
+    const newPost = new Article({ ...req.body, uid });
+    await newPost.save();
+
+    res.json({ error: false, msg: 'Article Stored successfully' });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: true, msg: 'error while updating user info' });
+  }
+};
+
+const fetchPost = async (req, res) => {
+  try {
+    const uid = res.locals.user._id;
+    const articles = await Article.find({ uid });
+
+    res.json({ error: false, data: articles });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: true, msg: 'error while updating user info' });
+  }
+};
+
+const fetchPostBytag = async (req, res) => {
+  try {
+    const uid = res.locals.user._id;
+    const tagName = req.body.tag;
+    if (!tagName) return res.status(400).json({ error: true, msg: 'req body cannot be empty' });
+    const articles = await Article.find({ tags: tagName });
+
+    res.json({ error: false, data: articles });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: true, msg: 'error while updating user info' });
+  }
+};
+
+export default {
+  Home,
+  UserInfo,
+  FetchProfileInfo,
+  UpdateProfileInfo,
+  createOrganisation,
+  createPost,
+  fetchPost,
+  fetchPostBytag,
+};
