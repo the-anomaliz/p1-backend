@@ -23,9 +23,9 @@ const Login = async (req, res) => {
         if (error) {
           return res.status(401).json({ message: 'unauthorized', error: true });
         }
-        const { accessToken, refreshToken, err } = generateTokens(user.toObject());
+        const { accessToken, refreshToken, err } = generateTokens(user);
         if (err) return res.status(309).json({ message: 'unable to generate user tokens', error: true });
-        const _id = user.toObject()._id;
+        const _id = user._id;
         await User.findByIdAndUpdate({ _id }, { lastLogin: +new Date() });
         return res.status(200).json({ message: 'found', error: false, accessToken, refreshToken });
       });

@@ -27,7 +27,7 @@ const UserInfo = async (req, res) => {
 
 const FetchProfileInfo = async (req, res) => {
   try {
-    const uid = res.locals.user._id;
+    const uid = res.locals.user.id;
     let userInfo = await User.findById(uid).lean();
     delete userInfo.password; // check why this is not working
     res.json({ error: false, data: userInfo });
@@ -39,7 +39,7 @@ const FetchProfileInfo = async (req, res) => {
 
 const UpdateProfileInfo = async (req, res) => {
   try {
-    const uid = res.locals.user._id;
+    const uid = res.locals.user.id;
     const userData = req.body;
     if (!userData) return res.status(400).json({ error: true, msg: 'req body cannot be empty' });
     const userInfo = await User.findOneAndUpdate({ _id: uid }, userData, { new: true });
@@ -52,7 +52,7 @@ const UpdateProfileInfo = async (req, res) => {
 
 const createOrganisation = async (req, res) => {
   try {
-    const uid = res.locals.user._id;
+    const uid = res.locals.user.id;
     const orgData = req.body;
     if (!orgData) return res.status(400).json({ error: true, msg: 'req body cannot be empty' });
 
@@ -71,7 +71,7 @@ const createOrganisation = async (req, res) => {
 
 const createPost = async (req, res) => {
   try {
-    const uid = res.locals.user._id;
+    const uid = res.locals.user.id;
     const { heading, content, tags } = req.body;
     if (!heading || !content) return res.status(400).json({ error: true, msg: 'req body cannot be empty' });
 
@@ -87,7 +87,7 @@ const createPost = async (req, res) => {
 
 const fetchPosts = async (req, res) => {
   try {
-    const uid = res.locals.user._id;
+    const uid = res.locals.user.id;
     const articles = await Article.find({ uid });
 
     res.json({ error: false, data: articles });
@@ -111,7 +111,7 @@ const fetchUserPosts = async (req, res) => {
 
 const fetchPostsByTag = async (req, res) => {
   try {
-    const uid = res.locals.user._id;
+    const uid = res.locals.user.id;
     const tagName = req.body.tag;
     if (!tagName) return res.status(400).json({ error: true, msg: 'req body cannot be empty' });
     const articles = await Article.find({ tags: tagName });

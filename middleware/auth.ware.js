@@ -1,3 +1,4 @@
+import { User } from '../models/main.model.js';
 import { verifyAccessToken, verifyRefreshToken } from '../utils/auth.utils.js';
 
 //auth util verify token
@@ -7,9 +8,10 @@ const validateAccesstoken = async (req, res, next) => {
       return res.status(400).json({ message: 'bad request', error: true });
     const token = req.header('Authorization').split(' ')[1].trim();
     const decodedInfo = await verifyAccessToken(token);
-    if (!decodedInfo.emailVerified) {
+    const user = await User.findById(decodedInfo.id).lean()
+    if (!user.emailVerified) {
       return res.status(401).json({ success: false, message: 'user email not verified', error: true });
-    } else if (!decodedInfo.isActive) {
+    } else if (!user.isActive) {
       return res.status(401).json({ success: false, message: 'user is not active', error: true });
     }
 

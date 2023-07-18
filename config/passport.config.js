@@ -10,6 +10,7 @@ export default function (passport) {
     'local',
     new LocalStrategy({ usernameField: 'email' }, (email, password, done) => {
       User.findOne({ email: email })
+        .lean()
         .then((user) => {
           if (!user) {
             return done(null, false, { message: 'Email not registered' });
@@ -28,12 +29,14 @@ export default function (passport) {
   );
 
   passport.serializeUser((user, done) => {
-    done(null, user.id);
+    done(null, user._id);
   });
 
   passport.deserializeUser((id, done) => {
-    User.findById(id).then((err, user) => {
-      done(err, user);
-    });
+    User.findById(id)
+      .lean()
+      .then((err, user) => {
+        done(err, user);
+      });
   });
 }
