@@ -8,6 +8,7 @@ router.get('/user/info', validateAccesstoken, controller.UserInfo);
 router.get('/profile/me', validateAccesstoken, controller.FetchProfileInfo);
 router.post('/profile/me', validateAccesstoken, controller.UpdateProfileInfo);
 router.post('/org', validateAccesstoken, controller.createOrganisation);
+router.get('/org/:id', controller.getOrganization);
 
 router.post('/create/post', validateAccesstoken, controller.createPost);
 router.get('/posts/me', validateAccesstoken, controller.fetchPosts);

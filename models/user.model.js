@@ -34,7 +34,7 @@ export default new Schema(
       type: Boolean,
       default: true,
     },
-    activeSttausChangedBy: String,
+    activeStatusChangedBy: String,
     isBlocked: {
       type: Boolean,
       default: false,
@@ -46,20 +46,8 @@ export default new Schema(
     jobTitle: {
       type: String,
     },
-    company: {
-      company_id: String, // company id to connect with _id from another DB
-      name: String,
-      address: String,
-      website: String,
-      recongisedFor: String,
-    },
-    address: {
-      house: { type: String },
-      district: { type: String },
-      pincode: { type: Number },
-      state: { type: String },
-      country: { type: String },
-    },
+    company: { type: Schema.Types.ObjectId, ref: 'Organization' },
+    address: String,
     about: {
       type: String,
     },
@@ -77,6 +65,7 @@ export default new Schema(
     languages: {
       type: Array,
     },
+    type: { type: String, default: 'user' },
   },
   {
     timestamps: true,

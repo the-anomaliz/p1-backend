@@ -7,18 +7,22 @@ const Home = (req, res) => {
 const UserInfo = async (req, res) => {
   try {
     const statsType = req.query.stats;
-    const data = await User.find().select({ password: 0 }).lean();
-    const totalUser = data.length;
+    const usersPromise = User.find().select({ password: 0 }).lean();
+    const organizationsPromise = Org.find().lean();
+    const [users, organizations] = await Promise.all([usersPromise, organizationsPromise]);
+    if (statsType !== 'true') {
+      return res.status(200).json({ error: false, data: { users, organizations } });
+    }
+    const totalUser = users.length;
     let activeUsers = 0;
     let deactivedUsers = 0;
     let verifedUsers = 0;
     let unverifiedUsers = 0;
-    for (const [key, value] of Object.entries(data)) {
+    for (const [key, value] of Object.entries(users)) {
       value.isActive ? activeUsers++ : deactivedUsers++;
       value.isVerified ? verifedUsers++ : unverifiedUsers++;
     }
     let finalRes = { totalUser, activeUsers, deactivedUsers, verifedUsers, unverifiedUsers };
-    if (statsType !== 'true') finalRes = { ...finalRes, data };
     res.status(200).json({ error: false, data: finalRes });
   } catch (error) {
     res.status(500).json({ error: true, msg: 'error while fetching user info' });
@@ -47,6 +51,18 @@ const UpdateProfileInfo = async (req, res) => {
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: true, msg: 'error while updating user info' });
+  }
+};
+
+const getOrganization = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const organizationPromise = Org.findById(id).lean();
+    const userPromise = User.find({ company: id }).select({ fullName: 1, profile: 1, jobTitle: 1 }).lean();
+    const [organization, users] = await Promise.all([organizationPromise, userPromise]);
+    res.json({ error: false, data: { ...organization, employees: users } });
+  } catch (error) {
+    res.status(500).json({ error: true, msg: 'error while getting organization info' });
   }
 };
 
@@ -128,6 +144,7 @@ export default {
   UserInfo,
   FetchProfileInfo,
   UpdateProfileInfo,
+  getOrganization,
   createOrganisation,
   createPost,
   fetchPosts,
